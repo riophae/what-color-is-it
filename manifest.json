@@ -1,0 +1,14 @@
+{
+   "chrome_url_overrides": {
+      "newtab": "whatcolorisit.html"
+   },
+   "description": "The time... now in color.",
+   "icons": {
+      "128": "icon_128.png"
+   },
+   "manifest_version": 2,
+   "name": "New Tab - What Color Is It",
+   "version": "0.1.0",
+   "permissions": [ "clipboardWrite "],
+   "content_security_policy": "default_src 'self'; object-src 'self'; script-src 'self' 'unsafe-eval'"
+}
