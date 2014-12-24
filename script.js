@@ -89,11 +89,20 @@ function setTime(time, bg_color) {
   $('body').style.background = bg_color || hex;
 
   if (ready && fixed_time.s) {
+    var change_easing_function = true;
+
     if (fixed_time.s.match(/0$/)) {
       $('h1').setAttribute('data-show-time', 'true');
     }
     else if (fixed_time.s.match(/5$/)) {
       $('h1').setAttribute('data-show-time', 'false');
+    }
+    else {
+      change_easing_function = false;
+    }
+
+    if (change_easing_function) {
+      $('h1').classList.add('new-easing-function');
     }
   }
 

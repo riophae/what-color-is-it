@@ -102,9 +102,12 @@
         overflow-x: hidden;
         transition-property: width, opacity, padding;
         transition-duration: .8s;
-        transition-timing-function: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        transition-timing-function: ease;
         -webkit-transform: translateY(-.075rem);
         transform: translateY(-.075rem);
+      }
+      .new-easing-function .colon {
+        transition-timing-function: cubic-bezier(0.68, -0.55, 0.265, 1.55);
       }
       .digit {
         vertical-align: bottom;
