@@ -102,6 +102,7 @@
         overflow-x: hidden;
         transition-property: width, opacity, padding;
         transition-duration: .8s;
+        transition-timing-function: cubic-bezier(0.68, -0.55, 0.265, 1.55);
         -webkit-transform: translateY(-.075rem);
         transform: translateY(-.075rem);
       }
@@ -129,8 +130,8 @@
         background: rgba(255, 255, 255, .1);
         padding: .03rem .08rem;
         border-radius: .025rem;
-        -webkit-animation: fadeIn .8s;
-        animation: fadeIn .8s;
+        -webkit-animation: fadeIn .6s;
+        animation: fadeIn .6s;
       }
       #tip.fadeOut {
         -webkit-animation-name: fadeOut;

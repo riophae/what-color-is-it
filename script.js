@@ -206,8 +206,8 @@ function init() {
         $tip.style.display = '';
         $tip.classList.remove('fadeOut');
         animation_running = false;
-      }, 800);
-    }, 800 + 1500);
+      }, 600);
+    }, 600 + 1500);
   }
 
   setTimeout(startTimer, duration);
