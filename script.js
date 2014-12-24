@@ -1,4 +1,7 @@
-var ready = false;
+var
+  ready = false,
+  timeout
+;
 
 function $(selector) {
   return document.querySelector(selector);
@@ -34,21 +37,24 @@ function getTime() {
 }
 
 function fixTime(time) {
-  if (time.h < 10) {
-    time.h = '0' + time.h;
-  }
-  if (time.m < 10) {
-    time.m = '0' + time.m;
-  }
-  if (time.s < 10) {
-    time.s = '0' + time.s;
-  }
-  return time;
+  var fixed_time = { };
+  [ 'h', 'm', 's' ].forEach(function(x) {
+    fixed_time[x] = +time[x];
+    if (fixed_time[x] < 10) {
+      fixed_time[x] = '0' + fixed_time[x];
+    }
+    fixed_time[x] += '';
+  });
+  return fixed_time;
 }
 
 function doTimer() {
   setTime(getTime());
-  setTimeout(doTimer, 1000);
+  timeout = setTimeout(doTimer, 1000);
+}
+
+function stopTimer() {
+  clearTimeout(timeout);
 }
 
 function startTimer() {
@@ -57,8 +63,8 @@ function startTimer() {
   doTimer();
 }
 
-function getHexColor(time) {
-  return '#' + time.h + time.m + time.s;
+function getHexColor(fixed_time) {
+  return '#' + fixed_time.h + fixed_time.m + fixed_time.s;
 }
 
 function getHSLColor(hsl) {
@@ -67,62 +73,61 @@ function getHSLColor(hsl) {
 }
 
 function time2HSL(time) {
-  return getHSLColor(new colz.Color(getHexColor(time)));
+  return getHSLColor(new colz.Color(getHexColor(fixTime(time))));
 }
 
 function setTime(time, bg_color) {
-  fixTime(time);
-  var hex = getHexColor(time);
+  var
+    fixed_time = fixTime(time),
+    hex        = getHexColor(fixed_time)
+  ;
 
-  $('#hour').textContent    = time.h;
-  $('#minute').textContent  = time.m;
-  $('#second').textContent  = time.s;
+  $('#hour').textContent    = fixed_time.h;
+  $('#minute').textContent  = fixed_time.m;
+  $('#second').textContent  = fixed_time.s;
 
   $('body').style.background = bg_color || hex;
 
-  time.s = time.s + '';
-  if (ready && time.s) {
-    if (time.s.match(/0$/)) {
+  if (ready && fixed_time.s) {
+    if (fixed_time.s.match(/0$/)) {
       $('h1').setAttribute('data-show-time', 'true');
     }
-    else if (time.s.match(/5$/)) {
+    else if (fixed_time.s.match(/5$/)) {
       $('h1').setAttribute('data-show-time', 'false');
     }
   }
 
-  console.log(bg_color || time2HSL(getTime()));
+  //console.log(bg_color || time2HSL(getTime()));
 }
 
-function compute(total, base, percent, do_floor) {
-  var fixNumber = do_floor ? Math.floor : function(x) { return x; };
-  return fixNumber((total - base) * percent) + base;
-}
-
-function compute2(total, base, percent) {
+function compute(total, base, percent) {
   return (total - base) * percent + base;
 }
 
 function init() {
-  function getTimeMoreFrequently() {
-    time      = getTime();
-    hex       = getHexColor(time);
-    color     = new colz.Color(hex);
-    h         = color.h;
-    s         = color.s;
-    l         = color.l;
+  function getTimeAndColor() {
+    time       = getTime();
+    fixed_time = fixTime(time),
+    hex        = getHexColor(fixed_time);
+    color      = new colz.Color(hex);
+    h          = color.h;
+    s          = color.s;
+    l          = color.l;
   }
 
-  var time,
-      hex,
-      color,
-      h,
-      s,
-      l,
-      duration  = 800,
-      fps       = 60,
-      frames    = duration / (1000 / fps),
-      i         = frames,
-      total
+  var
+    time,
+    fixed_time,
+    hex,
+    color,
+    h,
+    s,
+    l,
+    duration  = 800,
+    fps       = 60,
+    frames    = duration / (1000 / fps),
+    i         = frames,
+    total
   ;
 
   total = {
@@ -130,6 +135,8 @@ function init() {
     m: 60,
     s: 60
   };
+
+  getTimeAndColor();
 
   //console.log('start', time2HSL(time))
 
@@ -142,7 +149,7 @@ function init() {
       var progress = i / frames;
       if (Math.abs(progress - stage) >= .1) {
         stage = progress;
-        getTimeMoreFrequently();
+        getTimeAndColor();
       }
 
       setTimeout(function() {
@@ -154,7 +161,7 @@ function init() {
         for (var key in time) {
           if (! time.hasOwnProperty(key))
             continue;
-          temp[key] = compute(total[key], time[key], 1 - progress, true);
+          temp[key] = Math.floor(compute(total[key], +time[key], 1 - progress));
         }
 
         hsl.h = h;
@@ -173,7 +180,7 @@ function init() {
   $('h1').onclick = function(e) {
     var
       time = fixTime(getTime()),
-      str  = [ parseInt(time.h, 10), ':', time.m, ':', time.s ].join(''),
+      str  = [ +time.h, ':', time.m, ':', time.s ].join(''),
       $tip = $('#tip')
     ;
 
