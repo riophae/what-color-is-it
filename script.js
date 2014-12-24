@@ -180,11 +180,19 @@ function init() {
   $('h1').onclick = function(e) {
     var
       time = fixTime(getTime()),
+      hex  = getHexColor(time),
       str  = [ +time.h, ':', time.m, ':', time.s ].join(''),
       $tip = $('#tip')
     ;
 
-    copy(str);
+    if ($('h1').getAttribute('data-show-time') == 'true') {
+      copy(str);
+      $tip.textContent = 'Time copied.';
+    }
+    else {
+      copy(hex);
+      $tip.textContent = 'Color copied.';
+    }
 
     if (animation_running) return;
     animation_running = true;
