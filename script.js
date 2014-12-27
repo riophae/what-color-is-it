@@ -1,6 +1,8 @@
 var
-  ready = false,
-  timeout
+  timeout,
+  ready             = false,
+  switch_tab_ext_id = 'njifpcdmmfnogilppbhohhndcijflccj',
+  switch_tab_ext_js = 'chrome-extension://' + switch_tab_ext_id + '/shortcut.js'
 ;
 
 function $(selector) {
@@ -113,6 +115,27 @@ function compute(total, base, percent) {
   return (total - base) * percent + base;
 }
 
+function initSwitchTabSupport() {
+  function postMessage(msg, callback) {
+    callback = callback || function() { };
+    chrome.runtime.sendMessage(switch_tab_ext_id, msg, callback);
+  }
+
+  postMessage('ask for command list', function(command_list) {
+    var script = document.createElement('script');
+    script.src = switch_tab_ext_js;
+    document.head.appendChild(script);
+
+    script.onload = function(e) {
+      command_list.forEach(function(item) {
+        shortcut.add(item.key, function() {
+          postMessage(item.command);
+        });
+      });
+    }
+  });
+}
+
 function init() {
   function getTimeAndColor() {
     time       = getTime();
@@ -220,6 +243,7 @@ function init() {
   }
 
   setTimeout(startTimer, duration);
+  initSwitchTabSupport();
 }
 
 addEventListener('resize', setBaseSize);
