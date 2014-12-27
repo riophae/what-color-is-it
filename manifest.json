@@ -4,7 +4,10 @@
    },
    "description": "The time... now in color.",
    "icons": {
-      "128": "icon_128.png"
+      "256": "icon_256.png",
+      "128": "icon_128.png",
+      "96": "icon_96.png",
+      "48": "icon_48.png"
    },
    "manifest_version": 2,
    "name": "New Tab - What Color Is It",
