@@ -1,3 +1,5 @@
+var DEBUG_MODE = false;
+
 var
   timeout,
   ready             = false,
@@ -5,22 +7,28 @@ var
   switch_tab_ext_js = 'chrome-extension://' + switch_tab_ext_id + '/shortcut.js'
 ;
 
+function log() {
+  if (DEBUG_MODE === true) {
+    console.log.apply(console, arguments);
+  }
+}
+
 function $(selector) {
   return document.querySelector(selector);
 }
 
 function copy(str) {
-    var $sandbox = $('#sandbox');
+  var $sandbox = $('#sandbox');
 
-    str = str + '';
+  str = str + '';
 
-    $sandbox.value          = str;
-    $sandbox.selectionStart = 0;
-    $sandbox.selectionEnd   = str.length;
+  $sandbox.value          = str;
+  $sandbox.selectionStart = 0;
+  $sandbox.selectionEnd   = str.length;
 
-    document.execCommand('copy');
-    $sandbox.value = '';
-    $sandbox.blur();
+  document.execCommand('copy');
+  $sandbox.value = '';
+  $sandbox.blur();
 }
 
 function setBaseSize() {
@@ -34,7 +42,8 @@ function getTime() {
   return {
      h: now.getHours(),
      m: now.getMinutes(),
-     s: now.getSeconds()
+     s: now.getSeconds(),
+     ms: now.getMilliseconds()
   };
 }
 
@@ -108,7 +117,7 @@ function setTime(time, bg_color) {
     }
   }
 
-  //console.log(bg_color || time2HSL(getTime()));
+  log(bg_color || time2HSL(getTime()));
 }
 
 function compute(total, base, percent) {
@@ -155,10 +164,10 @@ function init() {
     h,
     s,
     l,
-    duration  = 800,
-    fps       = 60,
-    frames    = duration / (1000 / fps),
-    i         = frames,
+    DURATION = 800,
+    fps      = 60,
+    frames   = DURATION / (1000 / fps),
+    i        = frames,
     total
   ;
 
@@ -170,25 +179,21 @@ function init() {
 
   getTimeAndColor();
 
-  //console.log('start', time2HSL(time))
+  log('start', time2HSL(time))
 
   setBaseSize();
-
-  var stage = .5;
 
   do {
     (function(i) {
       var progress = i / frames;
-      if (Math.abs(progress - stage) >= .1) {
-        stage = progress;
-        getTimeAndColor();
-      }
 
       setTimeout(function() {
         var
-          temp    = { },
-          hsl     = { }
+          temp = { },
+          hsl  = { }
         ;
+
+        getTimeAndColor();
 
         for (var key in time) {
           if (! time.hasOwnProperty(key))
@@ -203,7 +208,7 @@ function init() {
         hsl = getHSLColor(hsl);
 
         setTime(temp, hsl);
-      }, duration * progress);
+      }, DURATION * progress);
     })(i);
   } while (--i);
 
@@ -233,7 +238,7 @@ function init() {
 
     setTimeout(function() {
       $tip.classList.add('fadeOut');
- 
+
       setTimeout(function() {
         $tip.style.display = '';
         $tip.classList.remove('fadeOut');
@@ -242,7 +247,7 @@ function init() {
     }, 600 + 1500);
   }
 
-  setTimeout(startTimer, duration);
+  setTimeout(startTimer, DURATION);
   initSwitchTabSupport();
 }
 
